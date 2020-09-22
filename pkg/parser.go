@@ -14,10 +14,6 @@ type StringExpr string
 type TableExpr map[interface{}]interface{}
 type BoolExpr bool
 
-// type MacroExpr map[interface{}]interface{}
-
-// TODO: couroutine expr
-
 func (e NumberExpr) Eval(out interface{}) error {
 	out = e
 	return nil
@@ -45,8 +41,14 @@ type Parser struct {
 func NewParser() *Parser {
 	return &Parser{}
 }
+
 func parseMaps(src interface{}) (Expr, error) {
-	return nil, nil
+	switch src.(type) {
+	default:
+		return nil, errors.New("In tables keys should be interface{}")
+	case map[interface{}]interface{}:
+		return TableExpr(src.(map[interface{}]interface{})), nil
+	}
 }
 
 func parseComplexDataStructure(src interface{}) (Expr, error) {

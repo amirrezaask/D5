@@ -32,3 +32,15 @@ func TestParseBool(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, expected, e)
 }
+
+func TestParseMap(t *testing.T) {
+	p := NewParser()
+	input := map[interface{}]interface{}{
+		"1":    2,
+		"name": "amirreza",
+	}
+	expected := TableExpr(input)
+	e, err := p.Parse(input)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, e)
+}
