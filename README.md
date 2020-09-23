@@ -32,7 +32,6 @@ D5 is an interpreted languaged that is influenced by Lisp heavily.
 D5 is build around blocks. Blocks are just simple Go maps when stored in memory. Each Block can be evaluated if the Block type is defined for D5.
 Builtin Table types are<br>
 
-### module
 ### function
 ### fn_call
 ### expr
