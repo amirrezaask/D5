@@ -10,7 +10,7 @@ import (
 func TestParseInt(t *testing.T) {
 	p := NewParser()
 	input := 12
-	expected := NumberExpr(12)
+	expected := Number(12)
 	e, err := p.Parse(input)
 	assert.NoError(t, err)
 	assert.Equal(t, expected, e)
@@ -19,7 +19,7 @@ func TestParseInt(t *testing.T) {
 func TestParseString(t *testing.T) {
 	p := NewParser()
 	input := "D5 is new lisp"
-	expected := StringExpr("D5 is new lisp")
+	expected := String("D5 is new lisp")
 	e, err := p.Parse(input)
 	assert.NoError(t, err)
 	assert.Equal(t, expected, e)
@@ -28,7 +28,7 @@ func TestParseString(t *testing.T) {
 func TestParseBool(t *testing.T) {
 	p := NewParser()
 	input := true
-	expected := BoolExpr(true)
+	expected := Bool(true)
 	e, err := p.Parse(input)
 	assert.NoError(t, err)
 	assert.Equal(t, expected, e)
@@ -36,19 +36,19 @@ func TestParseBool(t *testing.T) {
 
 func TestParseMap(t *testing.T) {
 	p := NewParser()
-	input := Table{
+	input := map[string]interface{}{
 		"1":    2,
 		"name": "amirreza",
 	}
-	expected := TableExpr{
-		"1":    NumberExpr(2),
-		"name": StringExpr("amirreza"),
+	expected := Table{
+		"1":    Number(2),
+		"name": String("amirreza"),
 	}
 	e, err := p.Parse(input)
 	assert.NoError(t, err)
 	assert.Equal(t, expected, e)
 }
-func readJson(bs []byte) (Table, error) {
+func readJson(bs []byte) (map[string]interface{}, error) {
 	m := Table{}
 	err := json.Unmarshal(bs, &m)
 	return m, err
