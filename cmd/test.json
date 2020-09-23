@@ -1,0 +1,10 @@
+{
+    "if": {
+        "cond": {
+            "name": "cond"
+        },
+        "then": {
+            "name": "amirerza" 
+        }
+    }
+}
