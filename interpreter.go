@@ -1,7 +1,6 @@
 package D5
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -9,10 +8,15 @@ type Backend interface {
 	Eval(src interface{}) error
 }
 
+type Block = map[string]interface{}
+
 type Interpreter struct {
 	state map[string]interface{}
 }
-type Block = map[string]interface{}
+
+func NewInterpreter() *Interpreter {
+	return &Interpreter{state: make(map[string]interface{})}
+}
 
 func (e *Interpreter) evalIf(b Block) (interface{}, error) {
 	cond := b["condition"]
@@ -38,8 +42,22 @@ func (e *Interpreter) evalPut(b Block) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	e.state[fmt.Sprint(key)] = value
-	return nil, nil
+	to, err := e.Eval(b["to"])
+	if err != nil {
+		return nil, err
+	}
+
+	switch to.(type) {
+	case string:
+		if to.(string) == "state" {
+			e.state[fmt.Sprint(key)] = value
+			return nil, nil
+		}
+	case Block:
+		to.(Block)[fmt.Sprint(key)] = value
+		return to, nil
+	}
+	return nil, fmt.Errorf("not supported argument for to: %T", to)
 }
 
 func (e *Interpreter) evalGet(b Block) (interface{}, error) {
@@ -64,26 +82,13 @@ func (e *Interpreter) evalGet(b Block) (interface{}, error) {
 	}
 }
 
-func getFromMap(m interface{}, k interface{}) (interface{}, bool) {
-	keysAreString := true
-	_, keysAreString = m.(map[string]interface{})
-	if keysAreString {
-		val, exists := m.(map[string]interface{})[fmt.Sprint(k)]
-		return val, exists
-	} else {
-		val, exists := m.(map[interface{}]interface{})[k]
-		return val, exists
-	}
-
-}
-
 func (e *Interpreter) Eval(src interface{}) (interface{}, error) {
 	switch src.(type) {
 	case Block:
-        s := src.(Block)
+		s := src.(Block)
 		typ, exists := s["type"]
 		if !exists {
-			return nil, fmt.Errorf("we need a type key")
+			return s, nil
 		}
 		switch typ {
 		case "if":
@@ -92,11 +97,12 @@ func (e *Interpreter) Eval(src interface{}) (interface{}, error) {
 			return s["value"], nil
 		case "get":
 			return e.evalGet(s)
+		case "put":
+			return e.evalPut(s)
 		}
-    case int, float64, string, bool:
-            return src, nil
+	case int, float64, string, bool:
+		return src, nil
 	}
 
-
-	return nil, errors.New("no type matched")
+	return nil, fmt.Errorf("no type matched: %T", src)
 }
