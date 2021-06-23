@@ -29,7 +29,7 @@ func TestEvalBool(t *testing.T) {
 	assert.Equal(t, input, output)
 }
 func TestEvalSimpleTable(t *testing.T) {
-	input := Table{
+	input := Map{
 		"name": String("amireza"),
 	}
 	e := &Evaluator{}

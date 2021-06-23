@@ -1,0 +1,17 @@
+{
+    "type": "if",
+    "condition": {
+        "type": "if",
+        "condition": true,
+        "then": false,
+        "else": true
+    },
+    "then": {
+        "type": "value",
+        "value": "1"
+    },
+    "else": {
+        "type": "value",
+        "value": "2"
+    }
+}

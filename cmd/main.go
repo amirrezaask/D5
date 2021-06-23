@@ -17,7 +17,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	t := D5.Table{}
+	t := D5.Map{}
 	err = json.Unmarshal(bs, &t)
 	if err != nil {
 		panic(err)
@@ -27,5 +27,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("%+v", expr)
+	// spew.Dump(expr)
+	evaluator := D5.Evaluator{}
+	fmt.Println(evaluator.Eval(expr))
 }

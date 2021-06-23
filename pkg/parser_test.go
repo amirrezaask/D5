@@ -40,7 +40,7 @@ func TestParseMap(t *testing.T) {
 		"1":    2,
 		"name": "amirreza",
 	}
-	expected := Table{
+	expected := Map{
 		"1":    Number(2),
 		"name": String("amirreza"),
 	}
@@ -49,7 +49,7 @@ func TestParseMap(t *testing.T) {
 	assert.Equal(t, expected, e)
 }
 func readJson(bs []byte) (map[string]interface{}, error) {
-	m := Table{}
+	m := Map{}
 	err := json.Unmarshal(bs, &m)
 	return m, err
 }

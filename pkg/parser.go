@@ -2,6 +2,7 @@ package D5
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 )
 
@@ -27,35 +28,66 @@ func (n String) Value() interface{} {
 	return n
 }
 
-type Table map[string]interface{}
+type Map map[string]interface{}
 
-func (n Table) Type() string {
-	return "table"
+func (n Map) Type() string {
+	return "map"
 }
-func (n Table) Value() interface{} {
+func (n Map) Value() interface{} {
 	return n
 }
 
-type Bool bool
+type Array []interface{}
+
+func (a Array) Type() string {
+	return "array"
+}
+func (a Array) Value() interface{} {
+	return a
+}
+
+type Bool struct {
+    value bool
+}
 
 func (n Bool) Type() string {
 	return "bool"
 }
 func (n Bool) Value() interface{} {
-	return n
+	return n.value
 }
 
-type Parser struct {
-	CompTimeCtx map[string]interface{}
-}
+type Parser struct{}
 
 func NewParser() *Parser {
 	return &Parser{}
 }
-func (p *Parser) parseMaps(src interface{}) (Table, error) {
+
+func (p *Parser) parseMaps(src interface{}) (Map, error) {
 	switch src.(type) {
+	case Map:
+		newTable := Map{}
+		for k, v := range src.(Map) {
+			exprVal, err := p.Parse(v)
+			if err != nil {
+				return nil, err
+			}
+			newTable[k] = exprVal
+		}
+		return newTable, nil
+	case map[interface{}]interface{}:
+		newTable := Map{}
+		for k, v := range src.(map[interface{}]interface{}) {
+			exprVal, err := p.Parse(v)
+			if err != nil {
+				return nil, err
+			}
+			newTable[fmt.Sprint(k)] = exprVal
+		}
+		return newTable, nil
+
 	case map[string]interface{}:
-		newTable := Table{}
+		newTable := Map{}
 		for k, v := range src.(map[string]interface{}) {
 			exprVal, err := p.Parse(v)
 			if err != nil {
@@ -65,16 +97,46 @@ func (p *Parser) parseMaps(src interface{}) (Table, error) {
 		}
 		return newTable, nil
 	default:
-		return nil, errors.New("In tables keys should be string")
+		return nil, errors.New("Map type did not match")
 
 	}
 }
 
-func (p *Parser) parseComplexDataStructure(src interface{}) (Table, error) {
+func (p *Parser) parseArray(src interface{}) (Node, error) {
+	switch src.(type) {
+	case Array:
+		newArray := Array{}
+		for _, v := range src.(Array) {
+			exprVal, err := p.Parse(v)
+			if err != nil {
+				return nil, err
+			}
+			newArray = append(newArray, exprVal)
+		}
+		return newArray, nil
+	case []interface{}:
+		newArray := Array{}
+		for _, v := range src.([]interface{}) {
+			exprVal, err := p.Parse(v)
+			if err != nil {
+				return nil, err
+			}
+			newArray = append(newArray, exprVal)
+		}
+		return newArray, nil
+	default:
+		return nil, errors.New("Array type did not match")
+	}
+
+}
+
+func (p *Parser) parseComplexDataStructure(src interface{}) (Node, error) {
 	t := reflect.TypeOf(src)
 	switch k := t.Kind(); k {
 	case reflect.Map:
 		return p.parseMaps(src)
+	case reflect.Slice:
+		return p.parseArray(src)
 	}
 	return nil, errors.New("No Type matched")
 }
@@ -90,7 +152,7 @@ func (p *Parser) Parse(src interface{}) (Node, error) {
 	case string:
 		return String(src.(string)), nil
 	case bool:
-		return Bool(src.(bool)), nil
+		return Bool{src.(bool)}, nil
 	default:
 		return p.parseComplexDataStructure(src)
 	}
