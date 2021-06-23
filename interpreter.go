@@ -72,7 +72,7 @@ func (e *Interpreter) evalGet(b Block) (interface{}, error) {
 	switch from.(type) {
 	case string:
 		if from.(string) == "state" {
-			return b[key.(string)], nil
+			return e.state[key.(string)], nil
 		}
 		return nil, fmt.Errorf("only state is supported for now")
 	case Block:

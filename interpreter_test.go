@@ -52,7 +52,7 @@ func TestEvalIf(t *testing.T) {
 
 func TestEvalPutInMap(t *testing.T) {
 	input := Block{
-		"type": "put",
+		"type":  "put",
 		"to":    Block{},
 		"key":   "mamad",
 		"value": 1,
@@ -65,7 +65,7 @@ func TestEvalPutInMap(t *testing.T) {
 
 func TestEvalPutInState(t *testing.T) {
 	input := Block{
-		"type": "put",
+		"type":  "put",
 		"to":    "state",
 		"key":   "mamad",
 		"value": 1,
@@ -73,5 +73,30 @@ func TestEvalPutInState(t *testing.T) {
 	e := NewInterpreter()
 	_, err := e.Eval(input)
 	assert.NoError(t, err)
-	assert.Equal(t,1, e.state["mamad"])
+	assert.Equal(t, 1, e.state["mamad"])
+}
+
+func TestEvalGet(t *testing.T) {
+	input1 := Block{
+		"type": "get",
+		"from": Block{
+			"mamad": 1,
+		},
+		"key":   "mamad",
+		"value": 1,
+	}
+	input2 := Block{
+		"type":  "get",
+		"from":  "state",
+		"key":   "mamad",
+	}
+	e := NewInterpreter()
+	output, err := e.Eval(input1)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, output)
+	e = NewInterpreter()
+	e.state["mamad"] = 1
+	output, err = e.Eval(input2)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, output)
 }
