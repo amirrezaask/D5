@@ -1,4 +1,4 @@
-module D5
+module github.com/amirrezaask/D5
 
 go 1.15
 

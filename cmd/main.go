@@ -1,7 +1,7 @@
 package main
 
 import (
-	D5 "D5/pkg"
+	D5 "github.com/amirrezaask/D5"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -17,17 +17,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	t := D5.Map{}
-	err = json.Unmarshal(bs, &t)
-	if err != nil {
-		panic(err)
-	}
-	p := D5.NewParser()
-	expr, err := p.Parse(t)
+    b := D5.Block{}
+	err = json.Unmarshal(bs, &b)
 	if err != nil {
 		panic(err)
 	}
 	// spew.Dump(expr)
-	evaluator := D5.Evaluator{}
-	fmt.Println(evaluator.Eval(expr))
+	evaluator := D5.Interpreter{}
+	fmt.Println(evaluator.Eval(b))
 }

@@ -8,7 +8,7 @@ import (
 
 func TestEvalNumber(t *testing.T) {
 	input := Number(1.2)
-	e := &Evaluator{}
+	e := &Interpreter{}
 	output, err := e.Eval(input)
 	assert.NoError(t, err)
 	assert.Equal(t, input, output)
@@ -16,14 +16,14 @@ func TestEvalNumber(t *testing.T) {
 
 func TestEvalString(t *testing.T) {
 	input := String("amirreza")
-	e := &Evaluator{}
+	e := &Interpreter{}
 	output, err := e.Eval(input)
 	assert.NoError(t, err)
 	assert.Equal(t, input, output)
 }
 func TestEvalBool(t *testing.T) {
 	input := Bool(true)
-	e := &Evaluator{}
+	e := &Interpreter{}
 	output, err := e.Eval(input)
 	assert.NoError(t, err)
 	assert.Equal(t, input, output)
@@ -32,7 +32,7 @@ func TestEvalSimpleTable(t *testing.T) {
 	input := Map{
 		"name": String("amireza"),
 	}
-	e := &Evaluator{}
+	e := &Interpreter{}
 	output, err := e.Eval(input)
 	assert.NoError(t, err)
 	assert.Equal(t, input, output)
